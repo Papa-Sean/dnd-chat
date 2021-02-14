@@ -1,21 +1,12 @@
-const app = require('express')();
-const httpServer = require('http').createServer(app);
-// const io = require('socket.io')(server);
-const io = require("socket.io")(httpServer, {
-    cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"],
-      allowedHeaders: ["my-custom-header"],
-      credentials: true
-    }
+const app = require("express")();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
+io.on("connect", (socket) => {
+  console.log("user connected", socket.id);
+  socket.on("chat-msg", function (data) {
+    io.emit("chat-msg", data);
   });
-
-app.get('/', function(req, res) {
-    res.send('<h1>Hello World</h1>');
 });
-
-io.on('connection', () => { 
-    console.log('yea!');
- });
-
-httpServer.listen(3001);
+server.listen(3001, function () {
+  console.log("listening on port 3001");
+});
